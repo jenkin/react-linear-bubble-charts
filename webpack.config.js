@@ -8,14 +8,14 @@ module.exports = {
         'index': './src/index.js',
     },
     target: 'web',
-    mode: 'production',
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'build'),
     },
     module: {
         rules: [
-            { test: /\.js$/, exclude: /node_modules/, use: 'babel-loader' },
+            { test: /\.html$/, loader: 'html-loader' },
+            { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
             { test: /\.css$/, loader: "style-loader!css-loader" },
             { test: /\.scss$/, loader: "style-loader!css-loader!sass-loader" },
             { test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff&name=./dist/fonts/[name]/[hash].[ext]' },
@@ -28,7 +28,8 @@ module.exports = {
     },
     plugins: [
         new HtmlWebPackPlugin({
-            template: 'index.html'
+            template: './src/index.html',
+            filename: 'index.html',
         }),
     ],
     optimization: {
@@ -39,11 +40,11 @@ module.exports = {
                 uglifyOptions: {
                     compress: false,
                     ecma: 6,
-                    mangle: true
+                    mangle: true,
                 },
-                sourceMap: true
-            })
-        ]
+                sourceMap: true,
+            }),
+        ],
     },
     node: {
         fs: "empty", // avoid error for missing 'fs' module
