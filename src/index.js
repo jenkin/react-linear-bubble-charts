@@ -2,4 +2,4 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './components/App'
 
-ReactDOM.render(<App />, document.getElementById('react-root'))
+ReactDOM.render(<App n={5} />, document.getElementById('react-root'))
