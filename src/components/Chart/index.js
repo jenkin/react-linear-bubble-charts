@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import { Circle } from 'victory-core'
+import { Circle, Rect, Path } from 'victory-core'
+import * as d3Shape from 'd3-shape'
 import './index.scss'
 
 export default class Chart extends Component {
@@ -12,6 +13,14 @@ export default class Chart extends Component {
                     {this.props.ns.map((r, index) => (
                         <Circle cx={50*index+25} cy={this.props.height/2} r={r} key={'c'+index}/>
                     ))}
+                </g>
+                <g>
+                    {this.props.ns.map((r, index) => (
+                        <Rect x={50*index+25-2} y={this.props.height/2-r} width={4} height={r} key={'r'+index} style={{fill:"grey"}}/>
+                    ))}
+                </g>
+                <g>
+                    <Path d={d3Shape.line().x((d,i) => 50*i+25).y(d => this.props.height/2-d)(this.props.ns)} style={{fill:"none",stroke:"steelblue","stroke-width":"2px"}}/>
                 </g>
             </svg>
         )
