@@ -39,6 +39,7 @@
   "dependencies": {
     "d3-array": "^1.2.1",
     "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "react-dom": "^16.4.0",
+    "victory-core": "^23.0.7"
   }
 }

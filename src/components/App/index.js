@@ -25,7 +25,7 @@ export default class App extends Component {
                 <div className="row">
                     {this.state.circles.map((ns, index) => (
                         <div className="col-6 text-center" key={'d' + index}>
-                            <Chart n={ns} />
+                            <Chart ns={ns} />
                         </div>
                     ))}
                 </div>
