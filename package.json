@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "d3-array": "^1.2.1",
+    "d3-scale": "^2.1.0",
     "d3-shape": "^1.2.0",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
