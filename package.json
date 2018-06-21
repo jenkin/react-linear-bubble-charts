@@ -41,6 +41,7 @@
     "d3-collection": "^1.0.4",
     "d3-scale": "^2.1.0",
     "d3-shape": "^1.2.0",
+    "lodash": "^4.17.10",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "victory-core": "^23.0.7"

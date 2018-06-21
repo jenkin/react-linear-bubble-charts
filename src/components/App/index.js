@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Chart from '../Chart'
 import * as d3Array from 'd3-array'
 import * as d3Collection from 'd3-collection'
+import { uniq } from 'lodash'
 import './index.scss'
 
 export default class App extends Component {
@@ -17,9 +18,7 @@ export default class App extends Component {
         component.secondFilteredCategories = ["thermostat","couch","lotion","slipper","key chain","glass"]
 
         component.data = component.generateData(100)
-        component.state = {
-            countries: component.sliceData(100)
-        }
+        component.state = this.getState()
 
     }
 
@@ -27,29 +26,69 @@ export default class App extends Component {
 
         return (
             <div className="container">
-                {this.state.countries.map((country, index) => (
-                    <div className="row" key={'d' + index}>
-                        <h2 className="col-12 text-center">{country.key}</h2>
-                        <div className="col-12 text-center">
-                            <Chart circles={country.values} />
+                <div className="row">
+                    <div className="col-2">
+                        <div className="row">
+                            <div className="col-12">
+                            <h2>firstFilter</h2>
+                            {this.state.firstFilter.map((f, index) => (
+                                <p key={'p1-'+index}>
+                                    <input id={'cb1-'+index} type="checkbox"/>&nbsp;
+                                    <label htmlFor={'cb1-'+index}>{f}</label>
+                                </p>
+                            ))}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-12">
+                            <h2>secondFilter</h2>
+                            {this.state.secondFilter.map((f, index) => (
+                                <p key={'p2-'+index}>
+                                    <input id={'cb2-'+index} type="checkbox"/>&nbsp;
+                                    <label htmlFor={'cb2-'+index}>{f}</label>
+                                </p>
+                            ))}
+                            </div>
                         </div>
                     </div>
-                ))}
+                    <div className="col-10">
+                    {this.state.countries.map((country, index) => (
+                        <div className="row" key={'d' + index}>
+                            <h2 className="col-12 text-center">{country.key}</h2>
+                            <div className="col-12 text-center">
+                                <Chart circles={country.values} />
+                            </div>
+                        </div>
+                    ))}
+                    </div>
+                </div>
             </div>
         )
     }
 
-    sliceData(n) {
+    nestData(n) {
         return d3Collection.nest()
             .key(d => d.firstOrderCategory)
             .key(d => d.secondOrderCategory)
-            .entries(this.data.slice(0,n))
+            .entries(this.sliceData(n))
+    }
+
+    sliceData(n) {
+        return this.data.slice(0,n||this.data.length)
+    }
+
+    getState(n) {
+        let slicedData = this.sliceData(n),
+            nestedData = this.nestData(n)
+        return {
+            countries: nestedData,
+            firstFilter: uniq(slicedData.map(d => d.firstFilteredCategory)),
+            secondFilter: uniq(slicedData.map(d => d.secondFilteredCategory))
+        }
     }
 
     updateState(e) {
-        this.setState({
-            countries: this.sliceData(e.target.value)
-        })
+        this.setState(this.getState(e.target.value))
     }
 
     generateData(n) {
