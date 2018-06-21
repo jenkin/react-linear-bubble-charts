@@ -49,19 +49,39 @@ export default class Chart extends Component {
             .y(d => scaleY(component.props.height/2)-scaleHeight(d))
 
         return (
-            <VictoryContainer width={component.props.width} height={component.props.height}>
+            <VictoryContainer
+                width = {component.props.width}
+                height = {component.props.height}
+                className = "chart"
+            >
                 <g>
                     {component.props.ns.map((r, index) => (
-                        <Circle cx={scaleX(index)} cy={scaleY(component.props.height/2)} r={scaleRadius(r)} key={'c'+index}/>
+                        <Circle
+                            cx = {scaleX(index)}
+                            cy = {scaleY(component.props.height/2)}
+                            r = {scaleRadius(r)}
+                            key = {'c'+index}
+                            className = "bubble"
+                        />
                     ))}
                 </g>
                 <g>
                     {component.props.ns.map((h, index) => (
-                        <Rect x={scaleX(index)-2} y={scaleY(component.props.height/2)-scaleHeight(h)} width={4} height={scaleHeight(h)} key={'r'+index} style={{fill:"grey"}}/>
+                        <Rect
+                            x = {scaleX(index)-2}
+                            y = {scaleY(component.props.height/2)-scaleHeight(h)}
+                            width = {4}
+                            height = {scaleHeight(h)}
+                            key = {'r'+index}
+                            className = "bar"
+                        />
                     ))}
                 </g>
                 <g>
-                    <Path d={line(component.props.ns)} style={{fill:"none",stroke:"steelblue",strokeWidth:"2px"}}/>
+                    <Path
+                        d = {line(component.props.ns)}
+                        className = "line"
+                    />
                 </g>
             </VictoryContainer>
         )

@@ -43,7 +43,7 @@ export default class App extends Component {
             .range(n)
             .map(
                 n => d3Array
-                    .range(component.getRandomIntInclusive(1, 10))
+                    .range(component.getRandomIntInclusive(3, 10))
                     .map(n => component.getRandomIntInclusive(5,25)
                 )
             )
