@@ -1,13 +1,18 @@
 .chart {
 
-    rect.bar {
+    .bar {
         fill: grey;
     }
 
-    path.line {
+    .line {
         fill: none;
         stroke: steelblue;
         stroke-width: 2px;
+    }
+
+    .label {
+        font-size: 6px;
+        text-anchor: middle;
     }
 
 }
