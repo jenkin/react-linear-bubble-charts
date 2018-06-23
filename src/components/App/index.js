@@ -8,19 +8,13 @@ import './index.scss'
 
 export default class App extends Component {
 
-    constructor(props) {
-        super(props)
-        let component = this
+    firstOrderCategories = ["Morocco", "Venezuela", "Congo", "Italy", "Puerto Rico", "Sri Lanka", "Poland", "Malaysia", "Seychelles", "Réunion", "Ukraine", "Afghanistan", "Libya", "New Zealand", "Mauritius"]
+    secondOrderCategories = ["Golf", "Volleyball", "Swimming", "Badminton", "Gynastics", "Rugby", "Ice Hockey", "Rowing", "Fencing", "Surfing"]
+    firstFilteredCategories = ["computer", "lamp shade", "drill press", "bananas", "tomato", "ipod"]
+    secondFilteredCategories = ["thermostat", "couch", "lotion", "slipper", "key chain", "glass"]
 
-        component.firstOrderCategories = ["Morocco","Venezuela","Congo","Italy","Puerto Rico","Sri Lanka","Poland","Malaysia","Seychelles","Réunion","Ukraine","Afghanistan","Libya","New Zealand","Mauritius"]
-        component.secondOrderCategories = ["Golf","Volleyball","Swimming","Badminton","Gynastics","Rugby","Ice Hockey","Rowing","Fencing","Surfing"]
-        component.firstFilteredCategories = ["computer","lamp shade","drill press","bananas","tomato","ipod"]
-        component.secondFilteredCategories = ["thermostat","couch","lotion","slipper","key chain","glass"]
-
-        component.data = component.generateData(100)
-        component.state = this.getState()
-
-    }
+    data = this.generateData(100)
+    state = this.getState()
 
     render() {
 
@@ -30,36 +24,36 @@ export default class App extends Component {
                     <div className="col-2">
                         <div className="row">
                             <div className="col-12">
-                            <h2>firstFilter</h2>
-                            {this.state.firstFilter.map((f, index) => (
-                                <p key={'p1-'+index}>
-                                    <input id={'cb1-'+index} type="checkbox"/>&nbsp;
-                                    <label htmlFor={'cb1-'+index}>{f}</label>
-                                </p>
-                            ))}
+                                <h2>firstFilter</h2>
+                                {this.state.firstFilter.map((f, index) => (
+                                    <p key={'p1-' + index}>
+                                        <input id={'cb1-' + index} type="checkbox" />&nbsp;
+                                    <label htmlFor={'cb1-' + index}>{f}</label>
+                                    </p>
+                                ))}
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-12">
-                            <h2>secondFilter</h2>
-                            {this.state.secondFilter.map((f, index) => (
-                                <p key={'p2-'+index}>
-                                    <input id={'cb2-'+index} type="checkbox"/>&nbsp;
-                                    <label htmlFor={'cb2-'+index}>{f}</label>
-                                </p>
-                            ))}
+                                <h2>secondFilter</h2>
+                                {this.state.secondFilter.map((f, index) => (
+                                    <p key={'p2-' + index}>
+                                        <input id={'cb2-' + index} type="checkbox" />&nbsp;
+                                    <label htmlFor={'cb2-' + index}>{f}</label>
+                                    </p>
+                                ))}
                             </div>
                         </div>
                     </div>
                     <div className="col-10">
-                    {this.state.countries.map((country, index) => (
-                        <div className="row" key={'d' + index}>
-                            <h2 className="col-12 text-center">{country.key}</h2>
-                            <div className="col-12 text-center">
-                                <Chart circles={country.values} />
+                        {this.state.countries.map((country, index) => (
+                            <div className="row" key={'d' + index}>
+                                <h2 className="col-12 text-center">{country.key}</h2>
+                                <div className="col-12 text-center">
+                                    <Chart circles={country.values} />
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                     </div>
                 </div>
             </div>
@@ -74,7 +68,7 @@ export default class App extends Component {
     }
 
     sliceData(n) {
-        return this.data.slice(0,n||this.data.length)
+        return this.data.slice(0, n || this.data.length)
     }
 
     getState(n) {
@@ -101,8 +95,8 @@ export default class App extends Component {
                     "secondOrderCategory": component.secondOrderCategories[Math.floor(Math.random() * component.secondOrderCategories.length)],
                     "firstFilteredCategory": component.firstFilteredCategories[Math.floor(Math.random() * component.firstFilteredCategories.length)],
                     "secondFilteredCategory": component.secondFilteredCategories[Math.floor(Math.random() * component.secondFilteredCategories.length)],
-                    "name": "c"+n,
-                    "value": component.getRandomIntInclusive(5,25)
+                    "name": "c" + n,
+                    "value": component.getRandomIntInclusive(5, 25)
                 })
             )
     }
