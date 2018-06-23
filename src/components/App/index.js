@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Chart from '../Chart'
+import Filter from '../Filter'
 import * as d3Array from 'd3-array'
 import * as d3Collection from 'd3-collection'
 import { uniq } from 'lodash'
@@ -24,24 +25,12 @@ export default class App extends Component {
                     <div className="col-2">
                         <div className="row">
                             <div className="col-12">
-                                <h2>firstFilter</h2>
-                                {this.state.firstFilter.map((f, index) => (
-                                    <p key={'p1-' + index}>
-                                        <input id={'cb1-' + index} type="checkbox" />&nbsp;
-                                    <label htmlFor={'cb1-' + index}>{f}</label>
-                                    </p>
-                                ))}
+                                <Filter title="firstFilter" items={this.state.firstFilter}/>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-12">
-                                <h2>secondFilter</h2>
-                                {this.state.secondFilter.map((f, index) => (
-                                    <p key={'p2-' + index}>
-                                        <input id={'cb2-' + index} type="checkbox" />&nbsp;
-                                    <label htmlFor={'cb2-' + index}>{f}</label>
-                                    </p>
-                                ))}
+                                <Filter title="secondFilter" items={this.state.secondFilter}/>
                             </div>
                         </div>
                     </div>
