@@ -4,7 +4,7 @@ import Chart from '../Chart'
 import Filter from '../Filter'
 import * as d3Array from 'd3-array'
 import * as d3Collection from 'd3-collection'
-import { uniqBy, every, keys, includes } from 'lodash'
+import { uniqBy, every, keys, includes, isEmpty, sortBy } from 'lodash'
 import './index.scss'
 
 export default class App extends Component {
@@ -21,11 +21,14 @@ export default class App extends Component {
     render() {
 
         let component = this,
-            nestedData = component.nestData(
-                component.filterData(
-                    component.originalData,
-                    component.state
-                )
+            filteredData = component.filterData(
+                component.originalData,
+                component.state
+            ),
+            nestedData = component.nestData(filteredData),
+            filters = component.generateState(
+                filteredData,
+                component.state
             )
 
         return (
@@ -34,12 +37,12 @@ export default class App extends Component {
                     <div className="col-2">
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="firstFilter" items={component.state.firstFilter} onChange={::component.updateState}/>
+                                <Filter title="firstFilter" items={filters.firstFilter} onChange={::component.updateState}/>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="secondFilter" items={component.state.secondFilter} onChange={::component.updateState}/>
+                                <Filter title="secondFilter" items={filters.secondFilter} onChange={::component.updateState}/>
                             </div>
                         </div>
                     </div>
@@ -65,12 +68,9 @@ export default class App extends Component {
             .entries(data)
     }
 
-    filterData(data, criteria) {
-
-        let component = this
-
+    filterData(data, criteria = {}) {
         return data.filter(d => (
-            every(
+            isEmpty(criteria) || every(
                 keys(criteria).map(k => (
                     every(criteria[k], ['checked', false]) || includes(criteria[k].filter(f => f.checked).map(f => f.name), d[k])
                 ))
@@ -79,31 +79,37 @@ export default class App extends Component {
 
     }
 
-    generateState(data) {
+    generateState(data, criteria = {}) {
         return {
-            firstFilter: uniqBy(
+            firstFilter: sortBy(uniqBy(
                 data.map(d => ({
                     name: d.firstFilter,
                     checked: false
                 })),
                 'name'
-            ),
-            secondFilter: uniqBy(
+            ).map(f => ({
+                name: f.name,
+                checked: criteria.firstFilter ? includes(criteria.firstFilter.filter(f => f.checked).map(f => f.name), f.name) : f.checked
+            })), 'name'),
+            secondFilter: sortBy(uniqBy(
                 data.map(d => ({
                     name: d.secondFilter,
                     checked: false
                 })),
                 'name'
-            )
+            ).map(f => ({
+                name: f.name,
+                checked: criteria.secondFilter ? includes(criteria.secondFilter.filter(f => f.checked).map(f => f.name), f.name) : f.checked
+            })), 'name')
         }
     }
 
     updateState(status) {
         this.setState(
             prevState => ({
-                [status.filter]: prevState[status.filter].map(d => ({
-                    name: d.name,
-                    checked: status.name === d.name ? status.checked : d.checked
+                [status.filter]: prevState[status.filter].map(f => ({
+                    name: f.name,
+                    checked: status.name === f.name ? status.checked : f.checked
                 }))
             })
         )

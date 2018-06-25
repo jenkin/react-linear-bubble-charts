@@ -17,7 +17,7 @@ export default class Filter extends Component {
                         <input
                             id={`f-${component.prefix}-${index}`}
                             type="checkbox"
-                            defaultChecked={f.checked}
+                            checked={f.checked}
                             onChange={
                                 e => component.props.onChange({
                                     filter: component.props.title,
