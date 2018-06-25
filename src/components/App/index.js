@@ -4,7 +4,7 @@ import Chart from '../Chart'
 import Filter from '../Filter'
 import * as d3Array from 'd3-array'
 import * as d3Collection from 'd3-collection'
-import { uniq } from 'lodash'
+import { uniqBy } from 'lodash'
 import './index.scss'
 
 export default class App extends Component {
@@ -17,6 +17,10 @@ export default class App extends Component {
     data = this.generateData(100)
     state = this.getState()
 
+    updateFilters(status) {
+        console.log(status)
+    }
+
     render() {
 
         return (
@@ -25,12 +29,12 @@ export default class App extends Component {
                     <div className="col-2">
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="firstFilter" items={this.state.firstFilter}/>
+                                <Filter title="firstFilter" items={this.state.firstFilter} onChange={this.updateFilters}/>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="secondFilter" items={this.state.secondFilter}/>
+                                <Filter title="secondFilter" items={this.state.secondFilter} onChange={this.updateFilters}/>
                             </div>
                         </div>
                     </div>
@@ -65,8 +69,8 @@ export default class App extends Component {
             nestedData = this.nestData(n)
         return {
             countries: nestedData,
-            firstFilter: uniq(slicedData.map(d => d.firstFilteredCategory)),
-            secondFilter: uniq(slicedData.map(d => d.secondFilteredCategory))
+            firstFilter: uniqBy(slicedData.map(d => ({ name: d.firstFilteredCategory, checked: false })), 'name'),
+            secondFilter: uniqBy(slicedData.map(d => ({ name: d.secondFilteredCategory, checked: false })), 'name')
         }
     }
 
