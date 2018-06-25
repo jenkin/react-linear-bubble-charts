@@ -14,14 +14,15 @@ export default class App extends Component {
     firstFilteredCategories = ["computer", "lamp shade", "drill press", "bananas", "tomato", "ipod"]
     secondFilteredCategories = ["thermostat", "couch", "lotion", "slipper", "key chain", "glass"]
 
-    data = this.generateData(100)
-    state = this.getState()
+    originalData = this.generateData(100)
+    filteredData = this.filterData()
+    nestedData = this.nestData()
 
-    updateFilters(status) {
-        console.log(status)
-    }
+    state = this.generateState()
 
     render() {
+
+        let component = this
 
         return (
             <div className="container">
@@ -29,17 +30,17 @@ export default class App extends Component {
                     <div className="col-2">
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="firstFilter" items={this.state.firstFilter} onChange={this.updateFilters}/>
+                                <Filter title="firstFilter" items={component.state.firstFilter} onChange={::component.updateState}/>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="secondFilter" items={this.state.secondFilter} onChange={this.updateFilters}/>
+                                <Filter title="secondFilter" items={component.state.secondFilter} onChange={::component.updateState}/>
                             </div>
                         </div>
                     </div>
                     <div className="col-10">
-                        {this.state.countries.map((country, index) => (
+                        {component.nestedData.map((country, index) => (
                             <div className="row" key={'d' + index}>
                                 <h2 className="col-12 text-center">{country.key}</h2>
                                 <div className="col-12 text-center">
@@ -53,29 +54,28 @@ export default class App extends Component {
         )
     }
 
-    nestData(n) {
+    nestData() {
         return d3Collection.nest()
             .key(d => d.firstOrderCategory)
             .key(d => d.secondOrderCategory)
-            .entries(this.sliceData(n))
+            .entries(this.filteredData)
     }
 
-    sliceData(n) {
-        return this.data.slice(0, n || this.data.length)
+    filterData(n) {
+        return this.originalData.slice(0, n || this.originalData.length)
     }
 
-    getState(n) {
-        let slicedData = this.sliceData(n),
-            nestedData = this.nestData(n)
+    generateState() {
         return {
-            countries: nestedData,
-            firstFilter: uniqBy(slicedData.map(d => ({ name: d.firstFilteredCategory, checked: false })), 'name'),
-            secondFilter: uniqBy(slicedData.map(d => ({ name: d.secondFilteredCategory, checked: false })), 'name')
+            firstFilter: uniqBy(this.filteredData.map(d => ({ name: d.firstFilteredCategory, checked: false })), 'name'),
+            secondFilter: uniqBy(this.filteredData.map(d => ({ name: d.secondFilteredCategory, checked: false })), 'name')
         }
     }
 
-    updateState(e) {
-        this.setState(this.getState(e.target.value))
+    updateState(status) {
+        this.setState((prevState, props) => ({
+            [status.filter]: prevState[status.filter].map(d => ({ name: d.name, checked: status.name === d.name ? status.checked : d.checked }))
+        }))
     }
 
     generateData(n) {

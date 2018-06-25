@@ -5,14 +5,6 @@ export default class Filter extends Component {
 
     prefix = Math.random().toString().replace('.','')
 
-    onChange(f,n,c) {
-        this.props.onChange({
-            filter: f,
-            name: n,
-            checked: c
-        })
-    }
-
     render() {
 
         let component = this
@@ -26,7 +18,13 @@ export default class Filter extends Component {
                             id={`f-${component.prefix}-${index}`}
                             type="checkbox"
                             defaultChecked={f.checked}
-                            onChange={e => ::component.onChange(component.props.title, f.name, e.target.checked)}
+                            onChange={
+                                e => component.props.onChange({
+                                    filter: component.props.title,
+                                    name: f.name,
+                                    checked: e.target.checked
+                                })
+                            }
                         />&nbsp;<label htmlFor={`f-${component.prefix}-${index}`}>{f.name}</label>
                     </p>
                 ))}
