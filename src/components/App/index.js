@@ -4,7 +4,7 @@ import Chart from '../Chart'
 import Filter from '../Filter'
 import * as d3Array from 'd3-array'
 import * as d3Collection from 'd3-collection'
-import { uniqBy } from 'lodash'
+import { uniqBy, every, keys, includes } from 'lodash'
 import './index.scss'
 
 export default class App extends Component {
@@ -15,14 +15,18 @@ export default class App extends Component {
     secondFilteredCategories = ["thermostat", "couch", "lotion", "slipper", "key chain", "glass"]
 
     originalData = this.generateData(100)
-    filteredData = this.filterData()
-    nestedData = this.nestData()
 
-    state = this.generateState()
+    state = this.generateState(this.originalData)
 
     render() {
 
-        let component = this
+        let component = this,
+            nestedData = component.nestData(
+                component.filterData(
+                    component.originalData,
+                    component.state
+                )
+            )
 
         return (
             <div className="container">
@@ -40,11 +44,11 @@ export default class App extends Component {
                         </div>
                     </div>
                     <div className="col-10">
-                        {component.nestedData.map((country, index) => (
-                            <div className="row" key={'d' + index}>
-                                <h2 className="col-12 text-center">{country.key}</h2>
+                        {nestedData.map((d, index) => (
+                            <div className="row" key={'d-' + index}>
+                                <h2 className="col-12 text-center">{d.key}</h2>
                                 <div className="col-12 text-center">
-                                    <Chart circles={country.values} />
+                                    <Chart circles={d.values} />
                                 </div>
                             </div>
                         ))}
@@ -54,28 +58,55 @@ export default class App extends Component {
         )
     }
 
-    nestData() {
+    nestData(data) {
         return d3Collection.nest()
-            .key(d => d.firstOrderCategory)
-            .key(d => d.secondOrderCategory)
-            .entries(this.filteredData)
+            .key(d => d.firstOrder)
+            .key(d => d.secondOrder)
+            .entries(data)
     }
 
-    filterData(n) {
-        return this.originalData.slice(0, n || this.originalData.length)
+    filterData(data, criteria) {
+
+        let component = this
+
+        return data.filter(d => (
+            every(
+                keys(criteria).map(k => (
+                    every(criteria[k], ['checked', false]) || includes(criteria[k].filter(f => f.checked).map(f => f.name), d[k])
+                ))
+            )
+        ))
+
     }
 
-    generateState() {
+    generateState(data) {
         return {
-            firstFilter: uniqBy(this.filteredData.map(d => ({ name: d.firstFilteredCategory, checked: false })), 'name'),
-            secondFilter: uniqBy(this.filteredData.map(d => ({ name: d.secondFilteredCategory, checked: false })), 'name')
+            firstFilter: uniqBy(
+                data.map(d => ({
+                    name: d.firstFilter,
+                    checked: false
+                })),
+                'name'
+            ),
+            secondFilter: uniqBy(
+                data.map(d => ({
+                    name: d.secondFilter,
+                    checked: false
+                })),
+                'name'
+            )
         }
     }
 
     updateState(status) {
-        this.setState((prevState, props) => ({
-            [status.filter]: prevState[status.filter].map(d => ({ name: d.name, checked: status.name === d.name ? status.checked : d.checked }))
-        }))
+        this.setState(
+            prevState => ({
+                [status.filter]: prevState[status.filter].map(d => ({
+                    name: d.name,
+                    checked: status.name === d.name ? status.checked : d.checked
+                }))
+            })
+        )
     }
 
     generateData(n) {
@@ -84,10 +115,10 @@ export default class App extends Component {
             .range(n)
             .map(
                 (n) => ({
-                    "firstOrderCategory": component.firstOrderCategories[Math.floor(Math.random() * component.firstOrderCategories.length)],
-                    "secondOrderCategory": component.secondOrderCategories[Math.floor(Math.random() * component.secondOrderCategories.length)],
-                    "firstFilteredCategory": component.firstFilteredCategories[Math.floor(Math.random() * component.firstFilteredCategories.length)],
-                    "secondFilteredCategory": component.secondFilteredCategories[Math.floor(Math.random() * component.secondFilteredCategories.length)],
+                    "firstOrder": component.firstOrderCategories[Math.floor(Math.random() * component.firstOrderCategories.length)],
+                    "secondOrder": component.secondOrderCategories[Math.floor(Math.random() * component.secondOrderCategories.length)],
+                    "firstFilter": component.firstFilteredCategories[Math.floor(Math.random() * component.firstFilteredCategories.length)],
+                    "secondFilter": component.secondFilteredCategories[Math.floor(Math.random() * component.secondFilteredCategories.length)],
                     "name": "c" + n,
                     "value": component.getRandomIntInclusive(5, 25)
                 })
