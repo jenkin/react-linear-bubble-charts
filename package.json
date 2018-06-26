@@ -18,6 +18,7 @@
     "babel-cli": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-function-bind": "^6.22.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.11",
@@ -39,12 +40,11 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "babel-plugin-transform-function-bind": "^6.22.0",
     "d3-array": "^1.2.1",
     "d3-collection": "^1.0.4",
     "d3-scale": "^2.1.0",
     "d3-shape": "^1.2.0",
-    "lodash": "^4.17.10",
+    "lodash-es": "^4.17.10",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "victory-core": "^23.0.7"
