@@ -4,7 +4,7 @@ import Chart from '../Chart'
 import Filter from '../Filter'
 import * as d3Array from 'd3-array'
 import * as d3Collection from 'd3-collection'
-import { uniqBy, every, keys, includes, isEmpty, sortBy } from 'lodash'
+import { uniqBy, every, keys, values, includes, isEmpty, keyBy, assign, sortBy } from 'lodash'
 import './index.scss'
 
 export default class App extends Component {
@@ -14,7 +14,7 @@ export default class App extends Component {
     firstFilteredCategories = ["computer", "lamp shade", "drill press", "bananas", "tomato", "ipod"]
     secondFilteredCategories = ["thermostat", "couch", "lotion", "slipper", "key chain", "glass"]
 
-    originalData = this.generateData(100)
+    originalData = this.generateData(this.props.n)
 
     state = this.generateState(this.originalData)
 
@@ -37,21 +37,39 @@ export default class App extends Component {
                     <div className="col-2">
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="firstFilter" items={filters.firstFilter} onChange={::component.updateState}/>
+                                <Filter
+                                    title="firstFilter"
+                                    items={
+                                        sortBy(
+                                            values(filters.firstFilter).map(f => assign(f, { count: filteredData.filter(d => d.firstFilter === f.name).length })),
+                                            'name'
+                                        )
+                                    }
+                                    onChange={::component.updateState}
+                                />
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-12">
-                                <Filter title="secondFilter" items={filters.secondFilter} onChange={::component.updateState}/>
+                                <Filter
+                                    title="secondFilter"
+                                    items={
+                                        sortBy(
+                                            values(filters.secondFilter).map(f => assign(f, { count: filteredData.filter(d => d.secondFilter === f.name).length })),
+                                            'name'
+                                        )
+                                    }
+                                    onChange={::component.updateState}
+                                />
                             </div>
                         </div>
                     </div>
                     <div className="col-10">
-                        {nestedData.map((d, index) => (
+                        {sortBy(nestedData,'key').map((d, index) => (
                             <div className="row" key={'d-' + index}>
                                 <h2 className="col-12 text-center">{d.key}</h2>
                                 <div className="col-12 text-center">
-                                    <Chart circles={d.values} />
+                                    <Chart circles={sortBy(d.values,'key')} />
                                 </div>
                             </div>
                         ))}
@@ -72,16 +90,16 @@ export default class App extends Component {
         return data.filter(d => (
             isEmpty(criteria) || every(
                 keys(criteria).map(k => (
-                    every(criteria[k], ['checked', false]) || includes(criteria[k].filter(f => f.checked).map(f => f.name), d[k])
+                    every(values(criteria[k]), ['checked',false]) || includes(values(criteria[k]).filter(f => f.checked).map(f => f.name), d[k])
                 ))
             )
         ))
 
     }
 
-    generateState(data, criteria = {}) {
+    generateState(data, defaultState = {}) {
         return {
-            firstFilter: sortBy(uniqBy(
+            firstFilter: assign(defaultState.firstFilter, keyBy(uniqBy(
                 data.map(d => ({
                     name: d.firstFilter,
                     checked: false
@@ -89,9 +107,9 @@ export default class App extends Component {
                 'name'
             ).map(f => ({
                 name: f.name,
-                checked: criteria.firstFilter ? includes(criteria.firstFilter.filter(f => f.checked).map(f => f.name), f.name) : f.checked
-            })), 'name'),
-            secondFilter: sortBy(uniqBy(
+                checked: defaultState.firstFilter ? includes(values(defaultState.firstFilter).filter(f => f.checked).map(f => f.name), f.name) : f.checked
+            })), 'name')),
+            secondFilter: assign(defaultState.secondFilter, keyBy(uniqBy(
                 data.map(d => ({
                     name: d.secondFilter,
                     checked: false
@@ -99,18 +117,23 @@ export default class App extends Component {
                 'name'
             ).map(f => ({
                 name: f.name,
-                checked: criteria.secondFilter ? includes(criteria.secondFilter.filter(f => f.checked).map(f => f.name), f.name) : f.checked
-            })), 'name')
+                checked: defaultState.secondFilter ? includes(values(defaultState.secondFilter).filter(f => f.checked).map(f => f.name), f.name) : f.checked
+            })), 'name'))
         }
     }
 
     updateState(status) {
         this.setState(
             prevState => ({
-                [status.filter]: prevState[status.filter].map(f => ({
-                    name: f.name,
-                    checked: status.name === f.name ? status.checked : f.checked
-                }))
+                [status.filter]: assign(
+                    prevState[status.filter],
+                    {
+                        [status.name]: {
+                            name: status.name,
+                            checked: status.checked
+                        }
+                    }
+                )
             })
         )
     }
@@ -144,5 +167,5 @@ App.propTypes = {
 }
 
 App.defaultProps = {
-    n: 1,
+    n: 100,
 }

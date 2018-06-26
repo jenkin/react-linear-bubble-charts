@@ -56,5 +56,8 @@ module.exports = {
         progress: true,
         compress: true,
         inline: true,
+        watchOptions: {
+            poll: true,
+        },
     },
 };

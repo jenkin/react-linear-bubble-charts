@@ -17,7 +17,8 @@ export default class Filter extends Component {
                         <input
                             id={`f-${component.prefix}-${index}`}
                             type="checkbox"
-                            checked={f.checked}
+                            defaultChecked={!!f.checked}
+                            //disabled={!f.count}
                             onChange={
                                 e => component.props.onChange({
                                     filter: component.props.title,
@@ -25,7 +26,7 @@ export default class Filter extends Component {
                                     checked: e.target.checked
                                 })
                             }
-                        />&nbsp;<label htmlFor={`f-${component.prefix}-${index}`}>{f.name}</label>
+                        />&nbsp;<label htmlFor={`f-${component.prefix}-${index}`}>{`${f.name} (${f.count||0})`}</label>
                     </p>
                 ))}
             </div>
