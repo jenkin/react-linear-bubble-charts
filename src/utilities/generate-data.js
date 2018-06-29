@@ -8,7 +8,7 @@ const firstOrderCategories = ["Morocco", "Venezuela", "Congo", "Italy", "Puerto 
       secondFilteredCategories = ["thermostat", "couch", "lotion", "slipper", "key chain", "glass"],
       thirdFilteredCategories = ["chameleon","gazelle","porcupine","peccary","grizzly bear","jaguar","otter","ewe","pony","mongoose","bighorn","doe","cheetah","elk","puma","tiger","bison","basilisk","ape","yak","mare","waterbuck","mustang","chicken","vicuna"]
 
-export default function generateData(n) {
+function generateData(n) {
     return range(n).map(
         (n) => ({
             "firstOrder": firstOrderCategories[generateRandomIntInclusive(0,firstOrderCategories.length-1)],
@@ -21,3 +21,18 @@ export default function generateData(n) {
         })
     )
 }
+
+function generateDataDeferred(n) {
+    return new Promise(res => {
+        setTimeout(() => {
+            res(generateData(n))
+        }, 5000)
+    })
+}
+
+async function generateDataAsync(n) {
+    return await generateDataDeferred(n)
+}
+
+export default generateData
+export { generateDataAsync, generateDataDeferred }

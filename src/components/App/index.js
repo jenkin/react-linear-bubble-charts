@@ -1,103 +1,48 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { values, assign, sortBy } from 'lodash-es'
-
-import Chart from '../Chart'
-import Filter from '../Filter'
-
-import filterData from '../../utilities/filter-data'
-import nestData from '../../utilities/nest-data'
-import generateAppState from '../../utilities/generate-app-state'
+import FacetedSearch from '../FacetedSearch'
+import { generateData, generateDataDeferred, generateDataAsync } from '../../utilities/generate-data'
 
 import './index.scss'
 
 export default class App extends Component {
 
-    state = generateAppState(
-        this.props.data,
-        this.props.filtering
-    )
+    state = {}
+
+    // Async method
+    async componentDidMount() {
+        this.setState({
+            data: await generateDataDeferred(this.props.n)
+        })
+    }
+
+    // Sync method using promise
+    /*
+    componentDidMount() {
+        generateDataAsync(this.props.n).then((data) => {
+            this.setState({
+                data: data
+            })
+        })
+    }
+    */
 
     render() {
-
-        let component = this,
-            filteredData = filterData(
-                component.props.data,
-                component.state
-            ),
-            nestedData = nestData(
-                filteredData,
-                component.props.nesting
-            ),
-            filters = generateAppState(
-                filteredData,
-                component.props.filtering,
-                component.state
-            )
-
         return (
-            <div className="container">
-                <div className="row">
-                    <div className="col-2">
-                        {component.props.filtering.map((filterName, index) => (
-                            <div className="row" key={'f-'+index}>
-                                <div className="col-12">
-                                    <Filter
-                                        title={filterName}
-                                        items={
-                                            sortBy(
-                                                values(filters[filterName]).map(f => assign(f, { count: filteredData.filter(d => d[filterName] === f.name).length })),
-                                                'name'
-                                            )
-                                        }
-                                        onChange={::component.updateState}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="col-10">
-                        {sortBy(nestedData,'key').map((d, index) => (
-                            <div className="row" key={'d-' + index}>
-                                <h2 className="col-12 text-center">{d.key}</h2>
-                                <div className="col-12 text-center">
-                                    <Chart circles={sortBy(d.values,'key')} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            <FacetedSearch
+                data={this.state.data}
+                filtering={["firstFilter", "secondFilter", "thirdFilter"]}
+                nesting={["firstOrder", "secondOrder"]}
+            />
         )
     }
-
-    updateState(status) {
-        this.setState(
-            prevState => ({
-                [status.filter]: assign(
-                    prevState[status.filter],
-                    {
-                        [status.name]: {
-                            name: status.name,
-                            checked: status.checked
-                        }
-                    }
-                )
-            })
-        )
-    }
-
 }
 
 App.propTypes = {
-    data: PropTypes.array,
-    filtering: PropTypes.array,
-    nesting: PropTypes.array,
+    n: PropTypes.number,
 }
 
 App.defaultProps = {
-    data: [],
-    filtering: [],
-    nesting: [],
+    n: 250,
 }
